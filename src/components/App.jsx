@@ -10,16 +10,27 @@ import Notification from './Notification/Notification';
 
 class App extends Component {
 	state = {
-		contacts: [
-			{ id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-			{ id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-			{ id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-			{ id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-		],
+		contacts: [],
 		filter: '',
 	};
 
 	// APP
+	componentDidMount() {
+		const contacts = JSON.parse(localStorage.getItem('contacts'));
+
+		if (contacts?.length) {
+			this.setState({ contacts });
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		console.dir(prevState.contacts);
+		const { contacts } = this.state;
+		if (prevState.contacts?.length !== contacts.length) {
+			localStorage.setItem('contacts', JSON.stringify(contacts));
+		}
+	}
+
 	addContacts = (newContact) => {
 		this.setState(({ contacts }) => {
 			return { contacts: [...contacts, newContact] };
@@ -88,7 +99,7 @@ class App extends Component {
 				</Section>
 
 				<Section title="Contacts">
-					{this.state.contacts.length > 0 ? (
+					{contacts.length > 0 ? (
 						<>
 							<Filter onChangeFilter={this.onChangeFilter} value={filter} />
 							<ContactList
